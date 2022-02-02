@@ -3,8 +3,7 @@ from repositories import Repo
 from pydantic import BaseModel
 from routes import ABSRoute
 from fastapi import APIRouter, Depends
-from db.config import get_db
-from sqlalchemy.ext.asyncio import AsyncSession
+from db.config import get_session
 
 
 class BaseRoute(ABSRoute):
@@ -35,8 +34,9 @@ class BaseRoute(ABSRoute):
 
     def post(self):
         @self.router.post('', response_model=self.response_schema)
-        async def post(data_in: self.request_schema, db: AsyncSession = Depends(get_db)):
+        async def post(data_in: self.request_schema, db=Depends(get_session)):
             result = await self.repo.create(db, data_in)
+            print(result)
             return result
 
     def get_one(self):
